@@ -1,13 +1,15 @@
 use diesel::{Insertable, Queryable, AsChangeset};
 use chrono::NaiveDateTime;
-use rocket::serde::Deserialize;
+use rocket::serde::{Deserialize, Serialize};
 use crate::schema::*;
 
-#[derive(Queryable, AsChangeset, Deserialize)]
+#[derive(Queryable, AsChangeset, Deserialize, Serialize)]
 pub struct Rustacean {
+    #[serde(skip_deserializing)] // this will skip insert field
     pub id: i32,
     pub name: String,
     pub email: String,
+    #[serde(skip_deserializing)]
     pub created_at: NaiveDateTime 
     // since we derive Deserialize this struct Rustacean with field created_at which implement using chrono, compiler will complain
     // chrono by default not enabling feature serde. for that we just need to enable serde feature in chrono in file Cargo.toml
