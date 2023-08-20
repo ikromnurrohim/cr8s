@@ -24,12 +24,14 @@ pub struct NewRustacean {
 
 #[derive(Queryable, AsChangeset, Deserialize, Serialize)]
 pub struct Crate {
+    #[serde(skip_deserializing)] // this will skip insert field
     pub id: i32,
     pub rustacean_id: i32,
     pub code: String,
     pub name: String,
     pub version: String,
     pub description: Option<String>, //why using Option ? this indicate the field is not null(that mean can be empty)
+    #[serde(skip_deserializing)] // this will skip insert field
     pub created_at: NaiveDateTime,
 }
 

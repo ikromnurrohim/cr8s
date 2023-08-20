@@ -12,6 +12,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 diesel = { version = "2.0", features = ["postgres", "chrono"]}
 chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
 
 # I use dev dependencies for reqwest because I just wanna use test in dev environment, not in production
 [dev-dependencies] 
