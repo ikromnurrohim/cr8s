@@ -48,3 +48,7 @@ async fn main() {
         .await;
 }
 ```
+
+## Test
+so I want to make sure if any change in my code then it not effect to existing code, to make sure that I must be test each one endpoint, so it not a good idea to test manual each endpoint, so I use automate test to execute test automatically.
+so i need to create folder called `tests` and file `rustaceans.rs` to write test to rustacean endpoint, after that i just need to run this command `cargo test` this command will find folder `tests` inside main folder and pick up any file inside that folder then execute them.
