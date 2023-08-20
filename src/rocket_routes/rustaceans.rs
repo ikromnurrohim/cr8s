@@ -3,7 +3,7 @@ use rocket::response::status::{Custom, NoContent};
 use rocket::http::Status;
 
 use crate::models::{NewRustacean, Rustacean};
-use crate::DbConn;
+use crate::rocket_routes::DbConn;
 use crate::repositories::RustaceanRepository;
 
 #[rocket::get("/rustaceans")]
@@ -18,7 +18,7 @@ pub async fn get_rustaceans(db: DbConn) -> Result<Value, Custom<Value>> {
 #[rocket::get("/rustacean/<id>")]
 pub async fn view_rustacean(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(move |c|{
-        RustaceanRepository::delete(c, id)
+        RustaceanRepository::find(c, id)
             .map(|rustacean| json!(rustacean))
             .map_err(|_| Custom(Status::InternalServerError, json!("Error")))
     }).await
