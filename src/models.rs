@@ -44,3 +44,49 @@ pub struct NewCrate {
     pub version: String,
     pub description: Option<String>
 }
+
+#[derive(Queryable)]
+pub struct User {
+    pub id: i32,
+    pub username: String,
+    pub password: String,
+    pub created_at: NaiveDateTime
+}
+
+#[derive(Insertable)]
+#[diesel(table_name=users)]
+pub struct NewUser {
+    pub username: String,
+    pub password: String
+}
+
+#[derive(Queryable)]
+pub struct Roles {
+    pub id: i32,
+    pub code: String,
+    pub name: String,
+    pub created_at: NaiveDateTime
+}
+
+#[derive(Insertable)]
+#[diesel(table_name=roles)]
+pub struct NewRole {
+    pub code: String,
+    pub name: String
+}
+
+#[derive(Queryable)]
+#[diesel(belongs_to(User))] // using belongs_to beacause this UserRole have an relation to user and role
+#[diesel(belongs_to(Role))] // so I wan to tell diesel that it have relation.
+pub struct UserRole {
+    pub id: i32,
+    pub user_id: i32,
+    pub role_id: i32,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name=users_roles)]
+pub struct NewUserRole {
+    pub user_id: i32,
+    pub role_id: i32,
+}
