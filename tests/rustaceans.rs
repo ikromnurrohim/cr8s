@@ -61,7 +61,6 @@ fn test_view_rustacean() {
         .send()
         .unwrap();
     assert_eq!(response.status(), StatusCode::OK);
-
     let rustacean: Value = response.json().unwrap();
     assert_eq!(rustacean, json!({
         "id": rustacean["id"],
@@ -69,6 +68,12 @@ fn test_view_rustacean() {
         "email": "foo@bar.com",
         "created_at": rustacean["created_at"]
     }));
+
+    // Test with not found ID in the database
+    let response = client.get(format!("{}/rustaceans/{}", common::APP_HOST, 999999))
+        .send()
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::NOT_FOUND);
 
     // Cleanup
     common::delete_test_rustacen(&client, rustacean);

@@ -50,5 +50,26 @@ async fn main() {
 ```
 
 ## Test
+> In here I make Testing for all endpoint and it's will called `Integration testing` 
+> means checking if different modules are working fine when combined together as a group.
+> So I just check those endpoint are work well with input and desire output.
 so I want to make sure if any change in my code then it not effect to existing code, to make sure that I must be test each one endpoint, so it not a good idea to test manual each endpoint, so I use automate test to execute test automatically.
 so i need to create folder called `tests` and file `rustaceans.rs` to write test to rustacean endpoint, after that i just need to run this command `cargo test` this command will find folder `tests` inside main folder and pick up any file inside that folder then execute them.
+
+
+## Logging
+This application using log, not from rocket. why it's so ?
+because if in the future we want to change webframework with other like actix, we don't need much code refactoring.
+this log is currently use if the communication with database is error then rocket will logging that.
+```
+pub fn server_error(e: Box<dyn std::error::Error>) -> Custom<Value> {
+    log::error!("{}", e);
+    Custom(Status::InternalServerError, json!("Error"))
+}
+```
+this function using Box<> parameter for using as globaly, so if I using Box<> I can reuse this not only for error log database but also the other type error.
+sample using log in the endpoint.
+```
+.map_err(|e|server_error(e.into()))
+```
+in that code I use `into()` to convert to whatever I want it, in this case I want to convert to `Box<>`

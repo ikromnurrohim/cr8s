@@ -81,6 +81,12 @@ fn test_view_crate() {
         "created_at": a_crate["created_at"]
     }));
 
+    // Test with ID it's not found in database
+    let response = client.get(format!("{}/crates/{}", common::APP_HOST, 99999))
+        .send()
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::NOT_FOUND);
+
     // Cleanup
     common::delete_test_crate(&client, a_crate);
     common::delete_test_rustacen(&client, rustacean);
@@ -92,6 +98,7 @@ fn test_update_crate() {
     // Setup
     let client = Client::new();
     let rustacean = common::create_test_rustacean(&client);
+    let rustacean2 = common::create_test_rustacean(&client);
     let a_crate = common::create_test_crate(&client, &rustacean);
 
     // Test
@@ -117,15 +124,14 @@ fn test_update_crate() {
         "created_at": a_crate["created_at"]
     }));
 
-    // Test author-switching
-    let rustacean2 = common::create_test_rustacean(&client);
+    // Test author-switching and long description
     let response = client.put(format!("{}/crates/{}", common::APP_HOST, a_crate["id"]))
         .json(&json!({
             "rustacean_id": rustacean2["id"],
             "code": "fooz",
             "name": "Fooz bar",
             "version": "0.2",
-            "description": "Fooz crate description" 
+            "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." 
         }))
         .send()
         .unwrap();
@@ -136,7 +142,7 @@ fn test_update_crate() {
         "code": "fooz",
         "name": "Fooz bar",
         "version": "0.2",
-        "description": "Fooz crate description",
+        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
         "rustacean_id": rustacean2["id"],
         "created_at": a_crate["created_at"]
     }));

@@ -21,7 +21,12 @@ pub async fn view_crate(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(move |c|{
         CrateRepository::find(c, id)
             .map(|a_crate| json!(a_crate))
-            .map_err(|e|server_error(e.into()))
+            .map_err(|e| match e {
+                // if match error not found this line will execute
+                diesel::result::Error::NotFound => Custom(Status::NotFound, json!("Not Found")),
+                // otherwise thi line will execute
+                _ => server_error(e.into())
+        })
     }).await
 }
 
