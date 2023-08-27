@@ -71,3 +71,59 @@ impl CrateRepository {
         diesel::delete(crates::table.find(id)).execute(c)
     }
 }
+
+pub struct UserRepository;
+
+impl UserRepository {
+    pub fn create(c: &mut PgConnection, new_user: NewUser, role_codes: Vec<String>) -> QueryResult<User> {
+        let user = diesel::insert_into(users::table)
+            .values(new_user)
+            .get_result::<User>(c)?;
+        for role_code in role_codes {
+            let new_user_role = {
+                if let Ok(role) = RoleRepository::find_by_code(c, role_code.to_owned()) {
+                    NewUserRole {user_id: user.id, role_id: role.id}
+                } else {
+                    let new_role = NewRole { name: role_code.clone(), code: role_code.clone() };
+                    let role = RoleRepository::create(c, new_role)?;
+                    NewUserRole {user_id: user.id, role_id: role.id}
+                }
+            };
+            diesel::insert_into(users_roles::table)
+                    .values(new_user_role)
+                    .get_result::<UserRole>(c)?;
+        }
+
+        Ok(user)
+    }
+}
+
+pub struct RoleRepository;
+
+impl RoleRepository {
+    pub fn find_by_code(c: &mut PgConnection, code: String) -> QueryResult<Role> {
+        // if the return query result is single, then use first()
+        roles::table.filter(roles::code.eq(code)).first(c)
+    }
+
+    pub fn find_by_ids(c: &mut PgConnection, ids: Vec<i32>) -> QueryResult<Vec<Role>> {
+        // if the return query result is many, then use get_results()
+        // alse on the function use a vector if we want to return many.
+        roles::table.filter(roles::id.eq_any(ids)).get_results(c)
+    }
+
+    pub fn find_by_user(c: &mut PgConnection, user: &User) -> QueryResult<Vec<Role>> {
+        // if we use table relationship, then we use belonging_to then in the models on both table 
+        // must implemented derive Identifiable
+        let user_roles = UserRole::belonging_to(&user).get_results(c)?;
+
+        let role_ids = user_roles.iter().map(|ur: &UserRole| ur.role_id).collect();
+        Self::find_by_ids(c, role_ids)
+    }
+
+    pub fn create(c: &mut PgConnection, new_role: NewRole) -> QueryResult<Role> {
+        diesel::insert_into(roles::table)
+            .values(new_role)
+            .get_result::<Role>(c)
+    }
+}

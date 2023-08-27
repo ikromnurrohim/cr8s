@@ -1,4 +1,4 @@
-use diesel::{Insertable, Queryable, AsChangeset};
+use diesel::{Insertable, Queryable, AsChangeset, Associations, prelude::Identifiable};
 use chrono::NaiveDateTime;
 use rocket::serde::{Deserialize, Serialize};
 use crate::schema::*;
@@ -45,7 +45,7 @@ pub struct NewCrate {
     pub description: Option<String>
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug, Identifiable)]
 pub struct User {
     pub id: i32,
     pub username: String,
@@ -60,8 +60,8 @@ pub struct NewUser {
     pub password: String
 }
 
-#[derive(Queryable)]
-pub struct Roles {
+#[derive(Queryable, Debug)]
+pub struct Role {
     pub id: i32,
     pub code: String,
     pub name: String,
@@ -75,9 +75,10 @@ pub struct NewRole {
     pub name: String
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Associations, Identifiable)]
 #[diesel(belongs_to(User))] // using belongs_to beacause this UserRole have an relation to user and role
 #[diesel(belongs_to(Role))] // so I wan to tell diesel that it have relation.
+#[diesel(table_name=users_roles)]
 pub struct UserRole {
     pub id: i32,
     pub user_id: i32,

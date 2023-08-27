@@ -1,5 +1,6 @@
 [package]
 name = "cr8s"
+default-run = "server"
 version = "0.1.0"
 edition = "2021"
 
@@ -13,6 +14,7 @@ serde_json = { version = "1.0" }
 diesel = { version = "2.0", features = ["postgres", "chrono"]}
 chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
+clap = "4.0"
 
 # I use dev dependencies for reqwest because I just wanna use test in dev environment, not in production
 [dev-dependencies] 
