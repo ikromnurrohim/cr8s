@@ -15,6 +15,7 @@ diesel = { version = "2.0", features = ["postgres", "chrono"]}
 chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
 clap = "4.0"
+argon2 = "0.5"
 
 # I use dev dependencies for reqwest because I just wanna use test in dev environment, not in production
 [dev-dependencies] 

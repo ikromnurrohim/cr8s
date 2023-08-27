@@ -1,4 +1,4 @@
-use diesel::{Insertable, Queryable, AsChangeset, Associations, prelude::Identifiable};
+use diesel::{Insertable, Queryable, AsChangeset, Associations, Identifiable};
 use chrono::NaiveDateTime;
 use rocket::serde::{Deserialize, Serialize};
 use crate::schema::*;
