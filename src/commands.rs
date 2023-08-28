@@ -1,7 +1,7 @@
 use argon2::{password_hash::{SaltString, rand_core::OsRng}, PasswordHasher};
 use diesel::{PgConnection, Connection};
 
-use crate::{models::{NewUser, User}, repositories::{UserRepository, RoleRepository}};
+use crate::{models::NewUser, repositories::{UserRepository, RoleRepository}};
 
 fn load_db_connection() ->PgConnection {
     let database_url = std::env::var("DATABASE_URL")
@@ -26,9 +26,15 @@ pub fn create_user(username: String, password: String, role_codes: Vec<String>) 
 }
 
 pub fn list_users() {
+    let mut c = load_db_connection();
 
+    let users = UserRepository::find_with_roles(&mut c).unwrap();
+    for user in users {
+        println!("{:?}", user);
+    }
 }
 
 pub fn delete_user(id: i32) {
-
+    let mut c = load_db_connection();
+    UserRepository::delete(&mut c, id).unwrap();
 }

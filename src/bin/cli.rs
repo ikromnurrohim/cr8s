@@ -19,15 +19,17 @@ fn main () {
                         .arg(Arg::new("password").required(true))
                         .arg(Arg::new("roles").required(true).num_args(1..).value_delimiter(','))
             )
-        )
-        .subcommand(
-            Command::new("list")
-            .about("List all available users")
-        )
-        .subcommand(
-            Command::new("delete")
-            .about("Delete user with given ID")
-            .arg(Arg::new("id").required(true))
+            .subcommand(
+                Command::new("list")
+                .about("List all available users")
+            )
+            .subcommand(
+                Command::new("delete")
+                .about("Delete user with given ID")
+                // in this argument we need to take integer but by default every input by user is String type
+                // so we need to parser String to i32 using clap value parser
+                .arg(Arg::new("id").required(true).value_parser(clap::value_parser!(i32)))
+            )
         ).get_matches();
 
     match matches.subcommand() {

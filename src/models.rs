@@ -75,7 +75,7 @@ pub struct NewRole {
     pub name: String
 }
 
-#[derive(Queryable, Associations, Identifiable)]
+#[derive(Queryable, Associations, Identifiable, Debug)]
 #[diesel(belongs_to(User))] // using belongs_to beacause this UserRole have an relation to user and role
 #[diesel(belongs_to(Role))] // so I wan to tell diesel that it have relation.
 #[diesel(table_name=users_roles)]
