@@ -1,6 +1,6 @@
 pub mod rustaceans;
 pub mod crates;
-mod authorization;
+pub mod authorization;
 
 use rocket::http::Status;
 use rocket::response::status::Custom;

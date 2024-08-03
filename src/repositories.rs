@@ -75,6 +75,10 @@ impl CrateRepository {
 pub struct UserRepository;
 
 impl UserRepository {
+    pub async fn find_by_username(c: &mut AsyncPgConnection, username: &String) -> QueryResult<User> {
+        users::table.filter(users::username.eq(username)).get_result(c).await
+    }
+
     pub async fn find_with_roles(c: &mut AsyncPgConnection) -> QueryResult<Vec<(User, Vec<(UserRole, Role)>)>> {
         let users = users::table.load(c).await?;
         let result = users_roles::table.inner_join(roles::table)
