@@ -1,4 +1,6 @@
-version: '3.3'
+networks:
+  my_rust_network:
+    driver: bridge
 
 services:
   postgres:
@@ -8,9 +10,17 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=app_db
     command: ["postgres", "-c", "log_statement=all"]
+    ports:
+      - 5432:5432
+    networks:
+      - my_rust_network
   
   redis:
     image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - my_rust_network
   
   app:
     build: .
@@ -19,5 +29,7 @@ services:
       - ROCKET_DATABASES={postgres={url=postgres://postgres:postgres@postgres/app_db}}
     ports:
       - 8000:8000
+    networks:
+      - my_rust_network
     volumes:
     - ./:/app

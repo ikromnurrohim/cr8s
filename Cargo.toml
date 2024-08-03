@@ -16,6 +16,8 @@ chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
 clap = "4.0"
 argon2 = "0.5"
+time = "=0.3.36"
+
 
 # I use dev dependencies for reqwest because I just wanna use test in dev environment, not in production
 [dev-dependencies] 
