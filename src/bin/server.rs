@@ -1,5 +1,7 @@
 extern crate cr8s;
 
+use rocket_db_pools::Database;
+
 #[rocket::main]
 async fn main() {
     let _ = rocket::build()
@@ -16,7 +18,7 @@ async fn main() {
             cr8s::rocket_routes::rustaceans::update_rustacean,
             cr8s::rocket_routes::rustaceans::delete_rustacean,
         ])
-        .attach(cr8s::rocket_routes::DbConn::fairing())
+        .attach(cr8s::rocket_routes::DbConn::init())
         .launch()
         .await;
 }

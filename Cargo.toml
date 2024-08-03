@@ -8,15 +8,17 @@ edition = "2021"
 
 [dependencies]
 rocket = { version = "0.5.0-rc", features = ["json"] }
-rocket_sync_db_pools = { version = "0.1.0-rc", features = ["diesel_postgres_pool"] }
+rocket_db_pools = { version = "0.1.0-rc", features = ["diesel_postgres", "deadpool_redis"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
-diesel = { version = "2.0", features = ["postgres", "chrono"]}
+diesel = { version = "2.1", features = ["chrono"] }
+diesel-async = { version = "0.4", features = ["postgres"] }
 chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
 clap = "4.0"
 argon2 = "0.5"
 time = "=0.3.36"
+tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
 
 
 # I use dev dependencies for reqwest because I just wanna use test in dev environment, not in production
