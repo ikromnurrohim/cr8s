@@ -19,6 +19,7 @@ clap = "4.0"
 argon2 = "0.5"
 time = "=0.3.36"
 tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
+rand = "0.8.5"
 
 
 # I use dev dependencies for reqwest because I just wanna use test in dev environment, not in production

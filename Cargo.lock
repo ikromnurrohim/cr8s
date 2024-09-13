@@ -358,6 +358,7 @@ dependencies = [
  "diesel",
  "diesel-async",
  "log",
+ "rand",
  "reqwest",
  "rocket",
  "rocket_db_pools",
