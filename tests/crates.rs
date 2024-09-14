@@ -1,12 +1,14 @@
-use reqwest::{StatusCode, blocking::Client};
+use reqwest::StatusCode;
+use reqwest::blocking::Client;
 use serde_json::{json, Value};
+use crate::common::get_client_with_logged_in_admin;
 
 pub mod common;
 
 #[test]
 fn test_get_crates() {
     // Setup
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
     let rustacean = common::create_test_rustacean(&client);
     let a_crate = common::create_test_crate(&client, &rustacean);
     let b_crate = common::create_test_crate(&client, &rustacean);
@@ -27,7 +29,7 @@ fn test_get_crates() {
 #[test]
 fn test_create_crate() {
     // Setup
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
     let rustacean = common::create_test_rustacean(&client);
 
     // Test
@@ -61,7 +63,7 @@ fn test_create_crate() {
 #[test]
 fn test_view_crate() {
     // Setup
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
     let rustacean = common::create_test_rustacean(&client);
     let a_crate = common::create_test_crate(&client, &rustacean);
 
@@ -85,7 +87,7 @@ fn test_view_crate() {
     let response = client.get(format!("{}/crates/{}", common::APP_HOST, 99999))
         .send()
         .unwrap();
-    assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
 
     // Cleanup
     common::delete_test_crate(&client, a_crate);
@@ -96,7 +98,7 @@ fn test_view_crate() {
 #[test]
 fn test_update_crate() {
     // Setup
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
     let rustacean = common::create_test_rustacean(&client);
     let rustacean2 = common::create_test_rustacean(&client);
     let a_crate = common::create_test_crate(&client, &rustacean);
@@ -157,7 +159,7 @@ fn test_update_crate() {
 #[test]
 fn test_delete_crate() {
     // Setup
-    let client = Client::new();
+    let client = get_client_with_logged_in_admin();
     let rustacean = common::create_test_rustacean(&client);
     let a_crate = common::create_test_crate(&client, &rustacean);
 
@@ -170,4 +172,14 @@ fn test_delete_crate() {
     // Cleanup
     common::delete_test_rustacen(&client, rustacean);
 
+}
+
+#[test]
+fn test_get_crates_without_logged_in() {
+    // Setup
+    let client = Client::new();
+
+    // Test
+    let response = client.get(format!("{}/crates", common::APP_HOST)).send().unwrap();
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
 }

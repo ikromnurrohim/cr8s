@@ -1,19 +1,35 @@
 use argon2::{PasswordVerifier, PasswordHash };
+use rocket::http::Status;
 use rocket::serde::json::{json, Json, Value};
 use rocket::response::status::Custom;
 use rocket_db_pools::Connection;
-use crate::rocket_routes::{DbConn, server_error};
+use rocket_db_pools::deadpool_redis::redis::AsyncCommands;
+use crate::rocket_routes::{DbConn, CacheConn, server_error};
 use crate::repositories::UserRepository;
 use crate::auth::{Credentials, authorize_user};
 
 #[rocket::post("/login", format="json", data="<credentials>")]
-pub async fn login(mut db: Connection<DbConn>, credentials: Json<Credentials>) -> Result<Value, Custom<Value>>{
-    UserRepository::find_by_username(&mut db, &credentials.username).await
-        .map(|user| {
-            if let token = authorize_user(&user, credentials.into_inner()) {
-                return json!({ "token": token });
+pub async fn login(mut db: Connection<DbConn>, mut cache: Connection<CacheConn>, credentials: Json<Credentials>) -> Result<Value, Custom<Value>>{
+    let user = UserRepository::find_by_username(&mut db, &credentials.username).await
+        .map_err(|e|{
+            match e {
+                diesel::result::Error::NotFound => Custom(Status::NotFound, json!({"message": "Wrong Credentials"})),
+                _ => server_error(e.into()),
             }
-            json!("Unauthorized")
-        })
-        .map_err(|e|server_error(e.into()))
+            })?;
+
+    let session_id = authorize_user(&user, credentials.into_inner())
+        .map_err(|_| Custom(Status::Unauthorized, json!("Wrong Credentials")))?;
+
+    cache.set_ex::<String, i32, ()>(
+        format!("sessions/{}", session_id),
+        user.id,
+        3*60*60
+    )
+        .await
+        .map_err(|e|server_error(e.into()))?;
+
+    Ok(json!({
+        "token": session_id
+    }))
 }
